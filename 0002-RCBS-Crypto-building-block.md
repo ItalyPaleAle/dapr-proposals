@@ -12,7 +12,7 @@ This is a proposal for a new building block for Dapr to allow developers to leve
 
 Modern applications make extensive use of cryptography, which, when implemented correctly, can make solutions safer even in case data is compromised. Even more, in certain cases the use of crypto is required to comply with industry regulations (think banking) or even with legal requirements (GDPR). However, leveraging cryptography is hard: developers need to pick the right algorithms and options, and need to learn the proper way to manage and protect keys. Additionally, there are operational complexities when teams want to limit who has access to cryptographic key material.
 
-Organizations have been increasingly started to leverage tools and services to perform crypto outside of applications. Examples include services such as Azure Key Vault, AWS KMS, Google Cloud KMS, etc. Customers may also use on-prem HSM products like Thales Luna. While those products/services perform the same or very similar operations, their APIs are very different.
+Organizations have increasingly started to leverage tools and services to perform cryptographic operations outside of applications. Examples include services such as Azure Key Vault, AWS KMS, Google Cloud KMS, etc. Customers may also use on-prem HSM products like Thales Luna. While those products/services perform the same or very similar operations, their APIs are very different.
 
 This is an area where Dapr can help. Just like we're offering an abstraction on top of secret stores, we can offer an abstraction layer on top key vaults.
 
