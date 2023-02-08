@@ -635,13 +635,13 @@ The HTTP APIs are developed in a way that is the exact "port" of the gRPC "subtl
 
 Methods are:
 
-- `/v1.0/subtlecrypto/getkey/[component]` ->  SubtleGetKey
-- `/v1.0/subtlecrypto/encrypt/[component]` ->  SubtleEncrypt
-- `/v1.0/subtlecrypto/decrypt/[component]` ->  SubtleDecrypt
-- `/v1.0/subtlecrypto/wrapkey/[component]` ->  SubtleWrapKey
-- `/v1.0/subtlecrypto/unwrapkey/[component]` ->  SubtleUnwrapKey
-- `/v1.0/subtlecrypto/sign/[component]` ->  SubtleSign
-- `/v1.0/subtlecrypto/verify/[component]` ->  SubtleVerify
+- `/v1.0/subtlecrypto/[component]/getkey` ->  SubtleGetKey
+- `/v1.0/subtlecrypto/[component]/encrypt` ->  SubtleEncrypt
+- `/v1.0/subtlecrypto/[component]/decrypt` ->  SubtleDecrypt
+- `/v1.0/subtlecrypto/[component]/wrapkey` ->  SubtleWrapKey
+- `/v1.0/subtlecrypto/[component]/unwrapkey` ->  SubtleUnwrapKey
+- `/v1.0/subtlecrypto/[component]/sign` ->  SubtleSign
+- `/v1.0/subtlecrypto/[component]/verify` ->  SubtleVerify
 
 > Note: URL will begin with `/v1.0-alpha1` while in preview
 
