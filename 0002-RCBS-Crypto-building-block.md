@@ -365,6 +365,8 @@ Notes on `Encrypt` and `Verify`:
 
 In the Dapr gRPC APIs, we are extending the `runtime.v1.Dapr` service to add new methods:
 
+> Note: APIs will have "Alpha1" added while in preview
+
 ```proto
 // (Existing Dapr service)
 service Dapr {
@@ -629,16 +631,18 @@ The `Encrypt` and `Decrypt` methods are stream-based. Dapr will read from the cl
 
 ## HTTP APIs
 
-The HTTP APIs are developed in a way that is the exact "port" of the gRPC "subtle" APIs, and the contents of the request and response bodies match exactly the fields in the gRPC APIs.
+The HTTP APIs are developed in a way that is the exact "port" of the gRPC "subtle" APIs, and the contents of the request and response bodies match exactly the fields in the gRPC APIs (except for the component name).
 
 Methods are:
 
-- `/v1.0/subtlecrypto/getkey` ->  SubtleGetKey
-- `/v1.0/subtlecrypto/encrypt` ->  SubtleEncrypt
-- `/v1.0/subtlecrypto/decrypt` ->  SubtleDecrypt
-- `/v1.0/subtlecrypto/wrapkey` ->  SubtleWrapKey
-- `/v1.0/subtlecrypto/unwrapkey` ->  SubtleUnwrapKey
-- `/v1.0/subtlecrypto/sign` ->  SubtleSign
-- `/v1.0/subtlecrypto/verify` ->  SubtleVerify
+- `/v1.0/subtlecrypto/getkey/[component]` ->  SubtleGetKey
+- `/v1.0/subtlecrypto/encrypt/[component]` ->  SubtleEncrypt
+- `/v1.0/subtlecrypto/decrypt/[component]` ->  SubtleDecrypt
+- `/v1.0/subtlecrypto/wrapkey/[component]` ->  SubtleWrapKey
+- `/v1.0/subtlecrypto/unwrapkey/[component]` ->  SubtleUnwrapKey
+- `/v1.0/subtlecrypto/sign/[component]` ->  SubtleSign
+- `/v1.0/subtlecrypto/verify/[component]` ->  SubtleVerify
+
+> Note: URL will begin with `/v1.0-alpha1` while in preview
 
 **Currently, higher-level APIs are not offered via HTTP**. This is because it's not possible, using HTTP, to have a stream where Dapr sends back data to the client before the client's request is complete. Without that, we'd have to buffer the entire data in-memory in the runtime, which would be not practical when encrypting very large files.
