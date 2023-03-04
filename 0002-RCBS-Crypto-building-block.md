@@ -156,6 +156,8 @@ mac-key = HKDF-SHA-256(ikm = file key, salt = empty, info = "header")
 MAC = HMAC-SHA-256(key = mac-key, message = first 2 lines of the header)
 ```
 
+> HKDF-SHA-256 is a key derivation function based on HMAC with SHA-256. See [RFC 5869 ("HMAC-based Extract-and-Expand Key Derivation Function (HKDF)")](https://www.rfc-editor.org/rfc/rfc5869.html). Being based on HMAC, it's not vulnerable to length-extension attacks, so we do not consider necessary using SHA-512 and truncating the output to 256-bits.
+
 Note that there's one newline character (0x0A) at the end of the MAC, which concludes the header.
 
 > Because each JSON encoder could produce a slightly different output, when verifying the manifest the MAC should be computed on the exact manifest string as included in the header. Verifiers should not re-encode the raw message as JSON.
