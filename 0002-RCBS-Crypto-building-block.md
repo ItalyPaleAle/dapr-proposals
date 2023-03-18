@@ -54,7 +54,7 @@ The new building block will feature 7 low-level APIs:
 
 The high-level APIs at launch will only include support for **encrypting** and **decrypting** messages (of arbitrary length), using the [Dapr encryption scheme](#dapr-encryption-scheme-daprioencv1).
 
-These APIs will only be available over gRPC, because they will work over a stream of data from the client. An HTTP implementation would require keeping the entire message in-memory, which is not acceptable (messages could be multiple GBs in size).
+Although these APIs will be available over both gRPC and HTTP, the gRPC implementation is **strongly** preferred, since it allows encrypting/decrypting data as a stream. The HTTP implementation requires keeping the entire message in memory, both as plaintext and ciphertext (a limitation in the HTTP protocol itself we cannot work around), which is not desirable unless users are encrypting very small files.
 
 ### Components
 
@@ -658,9 +658,11 @@ The `Encrypt` and `Decrypt` methods are stream-based. Dapr will read from the cl
 
 ## HTTP APIs
 
-The HTTP APIs are developed in a way that is the exact "port" of the gRPC "subtle" APIs, and the contents of the request and response bodies match exactly the fields in the gRPC APIs (except for the component name).
+### Low-level
 
-Methods are:
+The low-level HTTP APIs are developed in a way that is the exact "port" of the gRPC "subtle" APIs, and the contents of the request and response bodies match exactly the fields in the gRPC APIs (except for the component name in the URL).
+
+List of HTTP endpoints and the corresponding gRPC method:
 
 - `POST /v1.0/subtlecrypto/[component]/getkey` -> SubtleGetKey
 - `POST /v1.0/subtlecrypto/[component]/encrypt` -> SubtleEncrypt
@@ -672,4 +674,28 @@ Methods are:
 
 > Note: URL will begin with `/v1.0-alpha1` while in preview
 
-**Currently, higher-level APIs are not offered via HTTP**. This is because it's not possible, using HTTP, to have a stream where Dapr sends back data to the client before the client's request is complete. Without that, we'd have to buffer the entire data in-memory in the runtime, which would be not practical when encrypting very large files.
+> These APIs are implemented as "Universal" APIs in Dapr, where the business logic is implemented in gRPC only, and the APIs are then exposed as HTTP using the Universal API wrapper.
+
+### High-level
+
+For high-level APIs, we cannot use Universal APIs because we cannot perform bi-directional streaming with HTTP.
+
+As mentioned earlier, using HTTP for the high-level APIs is **highly inefficient** and users will be strongly advised against doing that outside of development or testing scenarios. In fact, while the Dapr encryption scheme is designed for streaming, that is not possible when using HTTP: first, the Dapr sidecar needs to receive the entire message (e.g. plaintext while encrypting), and only after that can begin responding to the caller; this means the Dapr sidecar needs to keep the entire message in-memory.
+
+List of high-level HTTP endpoints:
+
+- `PUT /v1.0/crypto/[component]/encrypt`
+  - Query-string arguments:
+    - `key` (required): name–or name/version (URL-encoded)–of the key
+    - `algorithm` (optional): `aes-gcm` (default) or `chacha20-poly1305`
+  - Body: the plain-text message to encrypt (in "raw format", e.g. not using multipart/form-data)
+  - Response: the ciphertext (in "raw format")
+- `PUT /v1.0/crypto/[component]/decrypt`
+  - Query-string arguments:
+    - `key` (required): name–or name/version (URL-encoded)–of the key
+  - Body: the ciphertext to decrypt (in "raw format", e.g. not using multipart/form-data)
+  - Response: the plain-text message (in "raw format")
+
+> Note: URL will begin with `/v1.0-alpha1` while in preview
+
+> Note: the body is limited by Dapr's ["http-max-request-size" option](https://docs.dapr.io/operations/configuration/increase-request-size/).
